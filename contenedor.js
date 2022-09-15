@@ -79,6 +79,18 @@ class Contenedor {
             console.log(error.message);
         }
     }
+    async update(productIndex, newProduct){
+        try{
+            const contenido = await fs.promises.readFile(`./${this.name}`, 'utf-8');
+            const contenidoJson = JSON.parse(contenido)
+            contenidoJson[productIndex] = newProduct;
+
+            await fs.promises.writeFile(`./${this.name}`, JSON.stringify(contenidoJson, null, 2))
+            
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
     }
 
 

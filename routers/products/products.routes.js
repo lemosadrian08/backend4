@@ -2,6 +2,7 @@ const { application } = require('express')
 const express =require('express')
 const contenedor1 = require ('../../contenedor')
 const productos = require ('../../productos.json')
+const fs = require('fs')
 
 const router = express.Router()
 
@@ -44,17 +45,29 @@ router.post('/',(req,res)=>{
     return res.json(newProduct)
 })
 
-/* router.put('/:id', (req,res)=>{
-    const { id } = req.params
-    contenedor1.getById(id).then((products) => {
-        if (products==null) {
-            res.send({error:'no se encontro'})
-        } else {
-            contenedor1.deleteById(id)
-            res.send('Producto eliminado')
-        }
-    })
-}) */
+router.put('/:id', (req, res) => {
+    const { params: { id }, body: { title, price, thumbnail} } = req;
+    if ( !title || !price || !thumbnail) {
+        return res.status(400).json({ success: false, error: 'Wrong body format' });
+    };
+    const productIndex = productos.findIndex((element) => element.id === +id);
+    if (productIndex < 0) return res.status(404).json({ success: false, error: `Product with id: ${id} does not exist!`});
+    const newProduct = {
+        ...productos[productIndex],
+        title,
+        price,
+        thumbnail
+    };
+
+
+    contenedor1.update(productIndex, newProduct)
+/*     productos[productIndex] = newProduct;
+    console.log(productos); */
+
+
+
+    return res.json({ success: true, result: newProduct});
+    });
 
 
 
